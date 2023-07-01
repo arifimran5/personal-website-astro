@@ -1,17 +1,25 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import ProjectList from "../components/ProjectList";
 ---
 
 <Layout title="aidevv.in">
-  <main class="p-6 mx-auto max-w-[40rem]">
-    <h1 class="m-0 text-2xl font-bold">Welcome to My portfolio</h1>
-    <p class="">
-      To get started, open the directory <code>src/pages</code> in your project.<br
-      />
-      <strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
+  <section class="mt-12 md:mt-20">
+    <h1 class="text-2xl font-medium text-text_primary">Arif Imran</h1>
+    <span class="text-sm italic text-text_secondary"
+      >aarif-imran (not aerif-imren)</span
+    >
+    <p class="mt-2 text-text_secondary">
+      Passionate software developer specializing in building modern,
+      user-friendly web applications with a focus on creating intuitive
+      interfaces and exceptional user experiences
     </p>
-    <pre>console.log("Hello there")</pre>
-  </main>
+  </section>
+
+  <section class="mt-8">
+    <h1 class="text-xl text-text_primary">Projects</h1>
+    <ProjectList />
+  </section>
 </Layout>
 
 <style></style>
