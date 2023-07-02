@@ -1,0 +1,28 @@
+---
+import type { Project } from "../utils/projectData";
+
+export type Props = {
+  project: Project;
+};
+
+const { project } = Astro.props;
+---
+
+<div class="mt-5">
+  <div class="flex items-center justify-between">
+    <h2 class="text-text_primary">{project.title}</h2>
+    <div class="flex items-center gap-5">
+      <a href={project.github}>
+        <img src="/assets/github.svg" alt="Github icon" />
+      </a>
+      <a href={project.live}>
+        <img src="/assets/link.svg" alt="Live Link icon" />
+      </a>
+    </div>
+  </div>
+  <p class="mt-1 text-text_secondary">{project.description}</p>
+  <p class="mt-2 text-text_secondary">
+    technologies:
+    <span class="italic"> {project.technologies.join(", ")}</span>{" "}
+  </p>
+</div>

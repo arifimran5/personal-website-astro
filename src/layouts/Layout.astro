@@ -24,11 +24,17 @@ const { title } = Astro.props;
     >
     </div>
     <div
-      class="bg-[url(assets/grid.svg)] min-h-screen pointer-events-none absolute opacity-50 inset-0"
+      class="bg-[url(assets/grid.svg)] min-h-screen pointer-events-none absolute opacity-60 inset-0"
     >
     </div>
 
     <main class="max-w-2xl px-4 mx-auto md:px-0">
+      <h1 class="text-[#636363] mt-8">
+        <a
+          class="italic underline transition-colors duration-200 hover:text-accent"
+          href="/">thatarif</a
+        >
+      </h1>
       <slot />
     </main>
   </body>
