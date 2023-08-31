@@ -11,6 +11,9 @@ dependencies:
   '@astrojs/tailwind':
     specifier: ^5.0.0
     version: 5.0.0(astro@3.0.5)(tailwindcss@3.3.2)
+  '@fontsource/handjet':
+    specifier: ^5.0.2
+    version: 5.0.2
   '@fontsource/inter':
     specifier: ^5.0.3
     version: 5.0.3
@@ -813,6 +816,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@fontsource/handjet@5.0.2:
+    resolution: {integrity: sha512-0NCVS48Y7COPxYOZhf2+NhPqT9xTQbXjxQHXRy/6/JTrYmBZMGWJnfquBSM5XyL+S1e8aIVUy06rj4H7SnNn4w==}
+    dev: false
 
   /@fontsource/inter@5.0.3:
     resolution: {integrity: sha512-JJvh5xht71F6e0E5r2+Ffu8g+CYAxMvnGJm9ZMg5IIjy8UwxLp+8C99TgPJupdEyBpEJv0wuMG2Rd183z/bV8g==}

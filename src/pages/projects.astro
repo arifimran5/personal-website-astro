@@ -1,7 +1,15 @@
 ---
+import ProjectCard from '../components/ProjectCard.astro'
 import Layout from '../layouts/Layout.astro'
+import { projects } from '../utils/projectData'
 ---
 
 <Layout title='Projects'>
-  <h1 class='text-5xl text-text_primary'>Page is cooking.</h1>
+  <section class=''>
+    <h1 class='text-4xl font-fun text-text_primary'>Projects</h1>
+    <span class='text-sm italic text-text_secondary'>some fun some not</span>
+    <div class='mt-4'>
+      {projects.slice(0, 3).map((p) => <ProjectCard project={p} />)}
+    </div>
+  </section>
 </Layout>

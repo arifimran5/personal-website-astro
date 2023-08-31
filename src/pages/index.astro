@@ -6,8 +6,8 @@ import { projects } from '../utils/projectData'
 ---
 
 <Layout title='thatarif.in'>
-  <section class='mt-6 md:mt-10'>
-    <h1 class='text-2xl font-medium text-text_primary'>Arif Imran</h1>
+  <section class=''>
+    <h1 class='text-4xl font-fun font-medium text-text_primary'>Arif Imran</h1>
     <span class='text-sm italic text-text_secondary'
       >aarif-imran (not aerif-imren)</span
     >
@@ -66,10 +66,10 @@ import { projects } from '../utils/projectData'
   <section class='mt-8'>
     <h1 class='text-xl text-text_primary'>Projects</h1>
     <div class='mt-4'>
-      {projects.map((p) => <ProjectCard project={p} />)}
+      {projects.slice(0, 3).map((p) => <ProjectCard project={p} />)}
     </div>
     <a
-      class='inline-block mt-3 text-accent'
+      class='inline-block mt-3 italic underline text-accent'
       href='/projects'
       aria-label='More Projects'>more..</a
     >
