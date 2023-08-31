@@ -1,14 +1,36 @@
 ---
 import '@fontsource/inter'
+import '@fontsource/handjet'
+import { ViewTransitions } from 'astro:transitions'
 
 export interface Props {
   title: string
 }
 
+const anim = {
+  old: {
+    name: 'fadeIn',
+    duration: '0.2s',
+    easing: 'linear',
+    fillMode: 'forwards',
+  },
+  new: {
+    name: 'fadeOut',
+    duration: '0.3s',
+    easing: 'linear',
+    fillMode: 'backwards',
+  },
+}
+
+const myFade = {
+  forwards: anim,
+  backwards: anim,
+}
+
 const { title } = Astro.props
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang='en'>
   <head>
     <meta charset='UTF-8' />
@@ -17,6 +39,7 @@ const { title } = Astro.props
     <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
     <meta name='generator' content={Astro.generator} />
     <title>{title}</title>
+    <ViewTransitions transition:animate={myFade} fallback='swap' />
   </head>
   <body class='bg-gray-950'>
     <div
@@ -29,12 +52,24 @@ const { title } = Astro.props
     </div>
 
     <main class='max-w-2xl px-4 mx-auto md:px-0'>
-      <h1 class='text-[#636363] mt-8'>
+      <header class='flex justify-between my-8 md:mb-10'>
         <a
-          class='italic underline transition-colors duration-200 hover:text-accent'
+          class='italic text-[#636363] underline transition-colors duration-200 hover:text-accent'
           href='/'>thatarif</a
         >
-      </h1>
+
+        <div class='space-x-1'>
+          <a
+            class='italic underline text-[#636363] transition-colors duration-200 hover:text-accent'
+            href='/blogs'>blogs</a
+          >
+          <span class='text-[#636363]'>/</span>
+          <a
+            class='italic underline text-[#636363] transition-colors duration-200 hover:text-accent'
+            href='/projects'>projects</a
+          >
+        </div>
+      </header>
       <slot />
     </main>
   </body>
