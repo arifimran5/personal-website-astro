@@ -47,7 +47,7 @@ import { projects } from '../utils/projectData'
               </path>
             </svg>
           </span>
-          Get in touch
+           Get in touch
         </a>
       </button>
 
@@ -63,7 +63,7 @@ import { projects } from '../utils/projectData'
     </div>
   </section>
 
-  <section class='mt-8'>
+  <section class='mt-8' transition:name='projects'>
     <h1 class='text-xl text-text_primary'>Projects</h1>
     <div class='mt-4'>
       {projects.slice(0, 3).map((p) => <ProjectCard project={p} />)}
@@ -74,10 +74,6 @@ import { projects } from '../utils/projectData'
       aria-label='More Projects'>more..</a
     >
   </section>
-
-  <div class='bg-gray-700 mt-8 h-[1px] w-full'></div>
-
-  <Footer />
 </Layout>
 
 <style></style>
