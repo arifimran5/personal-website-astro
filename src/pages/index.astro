@@ -2,6 +2,11 @@
 import Layout from '../layouts/Layout.astro'
 import ProjectCard from '../components/ProjectCard.astro'
 import { projects } from '../utils/projectData'
+import { getCollection } from 'astro:content'
+import { getFeaturedPosts } from '../utils/helper'
+
+const posts = await getCollection('blog')
+const featured_posts = getFeaturedPosts(posts)
 ---
 
 <Layout title='thatarif.in'>
@@ -62,6 +67,28 @@ import { projects } from '../utils/projectData'
     </div>
   </section>
 
+  <section class='mt-8'>
+    <h1 class='text-xl text-text_primary'>Blogs</h1>
+    <div class='mt-4'>
+      {
+        featured_posts.map((post) => (
+          <div class='mt-5 group'>
+            <a href={`/posts/${post.data.postSlug}`}>
+              <h2 class='text-text_primary group-hover:text-accent'>
+                {post.data.title}
+              </h2>
+              <p class='mt-1 text-text_secondary'>{post.data.description}</p>
+            </a>
+          </div>
+        ))
+      }
+    </div>
+    <a
+      class='inline-block mt-3 italic underline text-accent'
+      href='/posts'
+      aria-label='More blogs'>more..</a
+    >
+  </section>
   <section class='mt-8' transition:name='projects'>
     <h1 class='text-xl text-text_primary'>Projects</h1>
     <div class='mt-4'>
