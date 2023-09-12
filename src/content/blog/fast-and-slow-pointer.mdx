@@ -7,10 +7,24 @@ featured: true
 draft: false
 tags:
   - algo
+  - linked-list
 postSlug: fast-and-slow-pointer
-ogImage: ""
+ogImage: ''
 ---
 
+import { Image } from 'astro:assets'
+import ImageWithCaption from '../../components/ImageWithCaption.astro'
+import middle_of_ll_1 from '../../assets/posts/fast-and-slow-pattern/middle-of-ll-1.webp'
+import middle_of_ll_2 from '../../assets/posts/fast-and-slow-pattern/middle-of-ll-2.webp'
+import middle_of_ll_3 from '../../assets/posts/fast-and-slow-pattern/middle-of-ll-3.webp'
+import nth_from_end_1 from '../../assets/posts/fast-and-slow-pattern/nth-from-end-1.webp'
+import nth_from_end_2 from '../../assets/posts/fast-and-slow-pattern/nth-from-end-2.webp'
+import remove_nth_from_end_1 from '../../assets/posts/fast-and-slow-pattern/remove-nth-from-end-1.webp'
+import remove_loop_1 from '../../assets/posts/fast-and-slow-pattern/remove-loop-1.webp'
+import loop_start_1 from '../../assets/posts/fast-and-slow-pattern/loop-start-1.webp'
+import loop_start_2 from '../../assets/posts/fast-and-slow-pattern/loop-start-2.webp'
+import detect_loop_1 from '../../assets/posts/fast-and-slow-pattern/detect-loop-1.webp'
+import detect_loop_2 from '../../assets/posts/fast-and-slow-pattern/detect-loop-2.webp'
 
 A linked list is a linear data structure that is used to store a collection of data. Unlike an array, which stores data in a contiguous block of memory, a linked list consists of a series of nodes, where each node contains a reference to the next node in the list. This allows elements to be efficiently inserted and removed at any point in the list, as the only operation required is to update the references of the surrounding nodes.
 
@@ -20,7 +34,8 @@ In this article we are going to look at a pattern of problems in linked list cal
 
 Here is a simple linked list implementation in java with a push method that adds a node to the end of the list.
 
-```java showLineNumbers
+```java
+
 public class LinkedList {
     // Inner class to represent a node in the list
     private static class Node {
@@ -69,33 +84,29 @@ This is the most basic example of fast and slow pointer problem in linked list.
 
 Given a linked list with the following nodes -
 
-<!-- <Image
-  src="/assets/blogs/fast-and-slow-pattern/middle-of-ll-1.webp"
-  width="664"
-  height="89"
-  alt="A linked list of 5 nodes"
-/> -->
+<ImageWithCaption src={middle_of_ll_1} alt='A linked list of 5 nodes' />
 
 To find the middle of this list which is 30, we can approach this by following ways
 
 1\. looping over all the nodes and finding length. Then run the next loop half the length of the list.
 
-```java showLineNumbers
+```java
 public Node middleNode(Node head) {
-     Node temp = head;
-     int length = 0;
+    Node temp = head;
+    int length = 0;
 
      //loop over till our pointer become null
-     while(temp!=null){
-         temp = temp.next;
-         length++; //increase length by one
-     }
+    while(temp!=null){
+        temp = temp.next;
+        length++; //increase length by one
+    }
 
-     Node mid = head;
-     for(int i=0;i<length/2;i++){ // forward mid Node up till half of length
-         mid = mid.next;
-     }
-     return mid;
+    Node mid = head;
+     // forward mid Node up till half of length
+    for(int i=0;i<length/2;i++){
+        mid = mid.next;
+    }
+    return mid;
 }
 ```
 
@@ -105,25 +116,21 @@ But with this approach, we are traversing the list 2 times, which can be further
 
 Let's imagine a problem, there are 2 trains, one is faster running with 2x speed and the other is slower with x speed. They have to cover 100km distance.
 
-<!-- <Image
-  src="/assets/blogs/fast-and-slow-pattern/middle-of-ll-2.webp"
-  width="720"
-  height="207"
-  alt="Green arrow is faster train and red one is slower"
-/> -->
+<ImageWithCaption
+  src={middle_of_ll_2}
+  alt='Green arrow is faster train and red one is slower'
+/>
 
 For sure, faster train is going to reach its destination earlier, when fast covers 100km, slower is going to cover half of its destination at that time, as it is moving at half the speed of faster train.
-<!-- 
-<Image
-  src="/assets/blogs/fast-and-slow-pattern/middle-of-ll-3.webp"
-  width="709"
-  height="106"
-  alt="slow train is at 50km distance after fast train reaches its destination"
-/> -->
+
+<ImageWithCaption
+  src={middle_of_ll_3}
+  alt='slow train is at 50km distance after fast train reaches its destination'
+/>
 
 Now using this technique, we can keep two pointers at the head of our list, fast and slow pointer. we will start moving them, fast by 2 step and slow by 1 step. Then at point where fast will be at the end, slow pointer is going to be our mid pointer.
 
-```java showLineNumbers
+```java
 public Node middleNode(Node head) {
      Node fast = head;
      Node slow  = head;
@@ -135,11 +142,13 @@ public Node middleNode(Node head) {
 // if fast becomes null && fast.next becomes null
 
      while( fast!=null && fast.next!=null){
-         fast = fast.next.next; // moving fast by 2 step
+         // moving fast by 2 step
+         fast = fast.next.next;
          slow = slow.next;
      }
      return slow;
 }
+
 ```
 
 [solve the above problem on leetcode](https://leetcode.com/problems/middle-of-the-linked-list/)
@@ -148,13 +157,19 @@ public Node middleNode(Node head) {
 
 Another classic problem based on fast and slow pointer. Here given a list of nodes. Return the nth node from the end.
 
-return 3rd node from end which is 30
+<ImageWithCaption
+  src={nth_from_end_1}
+  alt='return 3rd node from end which is 30'
+/>
 
 To solve this problem with fast and slow method. Our intuition should be creating a gap of n between our fast and slow pointer. So that when both are moved by one and fast becomes null, the slow pointer will be n step before the fast pointer which is null.
 
-explanation of flow of the algorithm
+<ImageWithCaption
+  src={nth_from_end_2}
+  alt='explanation of flow of the algorithm'
+/>
 
-```java showLineNumbers
+```java
 public getNodeFromEnd(Node head, int n){
     Node fast = head;
     Node slow = head;
@@ -182,7 +197,10 @@ Now there is a problem related to it on leetcode.
 
 We have seen how we can get the nth node from the end of the list. Now we just have to remove it. The Only difference from the previous problem is we just have to be careful of the edge cases of removing the proper node according to the question. Examples are given below -
 
-problem examples of the question
+<ImageWithCaption
+  src={remove_nth_from_end_1}
+  alt='problem examples of the question'
+/>
 
 Now to solve the second case, we just need a check if `head.next==null` , in this case, there is only 1 element and we need to remove it, and return null.
 
@@ -190,7 +208,7 @@ To solve the first case, we need to follow the same method as the previous quest
 
 Now for case 3rd, when n = length of list, we need to remove the head of the list. So if we followed the previous algorithm, we would reach null while moving fast pointer n times ahead. Now to solve it, we will add a check after moving fast ahead by n that, if `fast==null` return head.next. Because in this case, we want to delete the head.
 
-```java showLineNumbers
+```java
 public Node removeNthFromEnd(Node head, int n) {
       Node fast = head;
       Node slow = head;
@@ -225,15 +243,21 @@ public Node removeNthFromEnd(Node head, int n) {
 
 At this point, this is going to be a cheesecake problem. Given a list determine whether there is a cycle or loop in the list. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the `next` pointer.
 
-problems of list having a cycle and with no cycle
+<ImageWithCaption
+  src={detect_loop_1}
+  alt='problems of list having a cycle and with no cycle'
+/>
 
 Just feel the flow of the algorithm, if there is a fast pointer moving 2 steps a time and a slow pointer moving 1 step. There is going to be a point where both fast and slow are going to collide.
 
-dry run of algo, to see if they meet or not
+<ImageWithCaption
+  src={detect_loop_2}
+  alt='dry run of algo, to see if they meet or not'
+/>
 
 Thus to solve this. we just need a **check if slow == fast at any point**.
 
-```java showLineNumbers {8,12}
+```java
 public boolean hasCycle(Node head) {
       Node slow  = head;
       Node fast  = head;
@@ -257,6 +281,11 @@ public boolean hasCycle(Node head) {
 
 Given the problem, if there is a loop in the list, find the starting point where loop has started. In the following example, the loop has started from node 20. We have to return the node.
 
+<ImageWithCaption
+  src={loop_start_1}
+  alt='Find the starting point of loop in the Linked list'
+/>
+
 One brute-force way of doing this problem would be, maintaining a hashmap of nodes visited. If you visit the node again, which you will, in case of a loop. That node is going to be our first node of the loop.
 
 As the above method will take O(N) space complexity of using a map, so to further optimize this code, we can use fast and slow pointer methods.
@@ -267,9 +296,12 @@ So to find the starting point. **When they meet, point start to head again, and 
 
 Let's see how it works.
 
-to detect cycle, here is the dry run of a example
+<ImageWithCaption
+  src={loop_start_2}
+  alt='to detect cycle, here is the dry run of a example'
+/>
 
-```java showLineNumbers
+```java
 public Node detectCycle(Node head) {
      Node slow = head;
      Node fast = head;
@@ -303,9 +335,12 @@ So the solution is, When fast and slow pointers meet for the first time, we poin
 
 Let's see with an example -
 
-dry run of problem of remove loop in the list
+<ImageWithCaption
+  src={remove_loop_1}
+  alt='dry run of problem of remove loop in the list'
+/>
 
-```java {8,10,15} showLineNumbers
+```java
 public void removeCycle(Node head) {
      Node slow = head;
      Node fast = head;
