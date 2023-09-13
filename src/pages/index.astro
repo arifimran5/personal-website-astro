@@ -28,42 +28,38 @@ const featured_posts = getFeaturedPosts(posts)
       <p class='text-text_primary'>Available for sde intern roles</p>
     </div>
     <div class='flex items-center gap-4'>
-      <button
-        class='text-text_secondary mt-2 py-2 bg-gray-800/80 rounded-md px-3 hover:bg-gray-700 duration-50 ease-out'
+      <a
+        class='flex items-center gap-2 text-black mt-2 py-2 bg-accent rounded-md px-3 hover:bg-accent/70 duration-50 ease-out'
+        target='_blank'
+        rel='noopener'
+        href='mailto:arifimran505@gmail.com'
       >
-        <a
-          class='flex items-center gap-2'
-          target='_blank'
-          rel='noopener'
-          href='mailto:arifimran505@gmail.com'
-        >
-          <span>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              width='20'
-              height='20'
-              viewBox='0 0 20 20'
-              ><path
-                fill='currentColor'
-                fill-rule='evenodd'
-                d='m7.172 11.334l2.83 1.935l2.728-1.882l6.115 6.033c-.161.052-.333.08-.512.08H1.667c-.22 0-.43-.043-.623-.12l6.128-6.046ZM20 6.376v9.457c0 .247-.054.481-.15.692l-5.994-5.914L20 6.376ZM0 6.429l6.042 4.132l-5.936 5.858A1.663 1.663 0 0 1 0 15.833V6.43ZM18.333 2.5c.92 0 1.667.746 1.667 1.667v.586L9.998 11.648L0 4.81v-.643C0 3.247.746 2.5 1.667 2.5h16.666Z'
-              >
-              </path>
-            </svg>
-          </span>
-           Get in touch
-        </a>
-      </button>
+        <span class='text-gray-700'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            width='20'
+            height='20'
+            viewBox='0 0 20 20'
+            ><path
+              fill='currentColor'
+              fill-rule='evenodd'
+              d='m7.172 11.334l2.83 1.935l2.728-1.882l6.115 6.033c-.161.052-.333.08-.512.08H1.667c-.22 0-.43-.043-.623-.12l6.128-6.046ZM20 6.376v9.457c0 .247-.054.481-.15.692l-5.994-5.914L20 6.376ZM0 6.429l6.042 4.132l-5.936 5.858A1.663 1.663 0 0 1 0 15.833V6.43ZM18.333 2.5c.92 0 1.667.746 1.667 1.667v.586L9.998 11.648L0 4.81v-.643C0 3.247.746 2.5 1.667 2.5h16.666Z'
+            >
+            </path>
+          </svg>
+        </span>
+         Get in touch
+      </a>
 
-      <p class='text-text_secondary relative'>
-        <a
-          target='_blank'
-          rel='noopener'
-          href='https://docs.google.com/document/d/12cyOOT7KD7-ysgOX5tEchDXWAcgnNMIjW4XHYMxCG1g/edit?usp=sharing'
-        >
-          Resume <span class='absolute top-[1px] ml-1'>↗</span></a
-        >
-      </p>
+      <a
+        target='_blank'
+        rel='noopener'
+        href='https://docs.google.com/document/d/12cyOOT7KD7-ysgOX5tEchDXWAcgnNMIjW4XHYMxCG1g/edit?usp=sharing'
+        class='text-text_secondary mt-2 py-2 relative bg-gray-800/80 flex justify-center gap-2 items-center rounded-md px-3 hover:bg-gray-700 duration-100 ease-out'
+      >
+        Resume
+        <span class='h-5'>↗</span>
+      </a>
     </div>
   </section>
 
