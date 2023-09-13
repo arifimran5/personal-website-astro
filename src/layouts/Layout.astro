@@ -57,5 +57,29 @@ const { title } = Astro.props
 
       <Footer />
     </main>
+    <style is:global>
+      body::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      pre::-webkit-scrollbar {
+        height: 10px;
+      }
+
+      body::-webkit-scrollbar-thumb,
+      pre::-webkit-scrollbar-thumb {
+        background: #e7ffa3;
+        border-radius: 20px;
+        -webkit-box-shadow: inset 1px 1px 6px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: inset 1px 1px 6px rgba(0, 0, 0, 0.4);
+        box-shadow: inset 1px 1px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      body::-webkit-scrollbar-track,
+      pre::-webkit-scrollbar-track {
+        background: #ffffff20;
+        border-radius: 20px;
+      }
+    </style>
   </body>
 </html>
