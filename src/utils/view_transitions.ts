@@ -1,20 +1,20 @@
 export interface TransitionAnimation {
-  name: string;
-  delay?: number | string;
-  duration?: number | string;
-  easing?: string;
-  fillMode?: string;
-  direction?: string;
+  name: string
+  delay?: number | string
+  duration?: number | string
+  easing?: string
+  fillMode?: string
+  direction?: string
 }
 
 export interface TransitionAnimationPair {
-  old: TransitionAnimation | TransitionAnimation[];
-  new: TransitionAnimation | TransitionAnimation[];
+  old: TransitionAnimation | TransitionAnimation[]
+  new: TransitionAnimation | TransitionAnimation[]
 }
 
 export interface TransitionDirectionalAnimations {
-  forwards: TransitionAnimationPair;
-  backwards: TransitionAnimationPair;
+  forwards: TransitionAnimationPair
+  backwards: TransitionAnimationPair
 }
 
 const fade: TransitionAnimationPair = {

@@ -1,24 +1,22 @@
-import type { CollectionEntry } from "astro:content";
-// import { SITE } from "@config";
+import type { CollectionEntry } from 'astro:content'
 
-export const getSortedPosts = (posts: CollectionEntry<"blog">[]) =>
+export const getSortedPosts = (posts: CollectionEntry<'blog'>[]) =>
   posts
     .filter(({ data }) => !data.draft)
     .sort(
       (a, b) =>
         Math.floor(new Date(b.data.pubDatetime).getTime() / 1000) -
-        Math.floor(new Date(a.data.pubDatetime).getTime() / 1000)
-    );
+        Math.floor(new Date(a.data.pubDatetime).getTime() / 1000),
+    )
 
-export const getFeaturedPosts = (posts: CollectionEntry<"blog">[]) =>
+export const getFeaturedPosts = (posts: CollectionEntry<'blog'>[]) =>
   posts
     .filter(({ data }) => !data.draft && data.featured)
     .sort(
       (a, b) =>
         Math.floor(new Date(b.data.pubDatetime).getTime() / 1000) -
-        Math.floor(new Date(a.data.pubDatetime).getTime() / 1000)
-    );
-
+        Math.floor(new Date(a.data.pubDatetime).getTime() / 1000),
+    )
 
 // const getPageNumbers = (numberOfPosts: number) => {
 //   const numberOfPages = numberOfPosts / Number(SITE.postPerPage);
@@ -32,10 +30,10 @@ export const getFeaturedPosts = (posts: CollectionEntry<"blog">[]) =>
 // };
 
 export function formatDate(input: Date | string | number): string {
-  const date = new Date(input);
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const date = new Date(input)
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
