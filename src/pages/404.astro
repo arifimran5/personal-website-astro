@@ -1,16 +1,19 @@
 ---
+import Layout from '../layouts/Layout.astro'
 ---
 
-<main
-  class='flex items-center justify-center min-h-screen p-6 text-white bg-gray-950'
->
-  <div class='text-center'>
-    <h1 class='text-5xl font-bold'>ummmm sorry, something went wrong</h1>
-    <p class='mt-2 text-3xl text-gray-400'>Can you check the url again</p>
-    <a
-      href='/'
-      class='inline-block px-5 py-2 mt-4 text-black bg-yellow-400 rounded-md hover:bg-yellow-500'
-      >Never mind, Go to Home</a
-    >
-  </div>
-</main>
+<Layout title='404 | thatarif.in'>
+  <main class='flex items-center min-h-[20em] justify-center p-6 text-white'>
+    <div class='text-center'>
+      <h1 class='text-3xl sm:text-4xl text-red-400 font-bold'>
+        sorry, something went wrong
+      </h1>
+      <p class='mt-2 text-xl text--400'>Can you check the url again</p>
+      <a
+        href='/'
+        class='inline-block px-5 py-2 mt-4 text-black bg-yellow-400 rounded-md hover:bg-yellow-500'
+        >Never mind, Go to Home</a
+      >
+    </div>
+  </main>
+</Layout>
