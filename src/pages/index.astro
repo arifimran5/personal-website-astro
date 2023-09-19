@@ -5,6 +5,8 @@ import { projects } from '@utils/projectData'
 import { getCollection } from 'astro:content'
 import { getFeaturedPosts } from '@utils/helper'
 
+export const prerender = true
+
 const posts = await getCollection('blog')
 const featured_posts = getFeaturedPosts(posts)
 ---

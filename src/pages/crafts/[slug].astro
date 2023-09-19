@@ -8,6 +8,8 @@ export interface Props {
   craft: CollectionEntry<'craft'>
 }
 
+export const prerender = true
+
 export async function getStaticPaths() {
   const crafts = await getCollection('craft', ({ data }) => !data.draft)
 
