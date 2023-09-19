@@ -12,6 +12,11 @@
     "prettier:fix": "prettier . --write",
     "prepare": "husky install"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,astro,mjs,cjs,json}": [
       "prettier --write --ignore-unknown"
