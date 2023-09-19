@@ -1,9 +1,9 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import ProjectCard from '../components/ProjectCard.astro'
-import { projects } from '../utils/projectData'
+import Layout from '@layouts/Layout.astro'
+import ProjectCard from '@components/ProjectCard.astro'
+import { projects } from '@utils/projectData'
 import { getCollection } from 'astro:content'
-import { getFeaturedPosts } from '../utils/helper'
+import { getFeaturedPosts } from '@utils/helper'
 
 const posts = await getCollection('blog')
 const featured_posts = getFeaturedPosts(posts)

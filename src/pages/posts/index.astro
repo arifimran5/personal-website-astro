@@ -1,7 +1,7 @@
 ---
-import Layout from '../../layouts/Layout.astro'
+import Layout from '@layouts/Layout.astro'
 import { getCollection } from 'astro:content'
-import { getSortedPosts } from '../../utils/helper'
+import { getSortedPosts } from '@utils/helper'
 
 const posts = await getCollection('blog')
 const sortedPosts = getSortedPosts(posts)
