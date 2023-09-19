@@ -6,7 +6,7 @@ const blog = defineCollection({
 })
 
 const craft = defineCollection({
-  schema: craftSchema
+  schema: craftSchema,
 })
 
 export const collections = { blog, craft }
