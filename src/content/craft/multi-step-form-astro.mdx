@@ -5,14 +5,12 @@ datetime: 2023-09-16T17:50:59.380Z
 draft: false
 ---
 
+import { Image } from 'astro:assets'
+import GIF from '@assets/craft/multi-step-form.gif'
 import ReactSampleComponent from '@components/ReactSampleComponent.tsx'
 
-<h1 class='text-2xl text-yellow-400'>Page underconstruction</h1>
+With Astro v3 is out and it supports chrome view transition API out of the box. It is fun building with it.
 
-Yo this is mdx
-
-```ts
-console.log('Yup here')
-```
-
-<ReactSampleComponent client:load />
+<div class='flex justify-center'>
+  <Image src={GIF} class='rounded-lg' alt='gif of multi step form' />
+</div>
