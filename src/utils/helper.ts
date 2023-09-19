@@ -11,7 +11,8 @@ export const getSortedPosts = (posts: CollectionEntry<'blog'>[]) =>
 
 export const getFeaturedPosts = (posts: CollectionEntry<'blog'>[]) =>
   posts
-    .filter(({ data }) => !data.draft && data.featured).sort(
+    .filter(({ data }) => !data.draft && data.featured)
+    .sort(
       (a, b) =>
         Math.floor(new Date(b.data.pubDatetime).getTime() / 1000) -
         Math.floor(new Date(a.data.pubDatetime).getTime() / 1000),
