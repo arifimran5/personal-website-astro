@@ -1,0 +1,724 @@
+---
+title: Token based authentication with Fastify, JWT, and Typescript
+description: Learn to build secure authentication systems with Fastify, JWT, and TypeScript in this comprehensive guide.
+pubDatetime: 2023-09-24T08:06:47.281Z
+author: Arif Imran
+featured: true
+draft: false
+tags:
+  - backend
+  - nodejs
+postSlug: token-based-authentication-with-fastify-jwt
+ogImage: 'token-based-auth.jpg'
+---
+
+import { Image } from 'astro:assets'
+import ImageWithCaption from '@components/ImageWithCaption.astro'
+
+import healthcheck from '@assets/posts/token-based-auth/healthcheckroute.webp'
+import getcheck from '@assets/posts/token-based-auth/get-check.webp'
+import registerRoute from '@assets/posts/token-based-auth/register-route.webp'
+import loginRoute from '@assets/posts/token-based-auth/login-route.webp'
+import cookieSet from '@assets/posts/token-based-auth/cookie-set.webp'
+import protectedRoute from '@assets/posts/token-based-auth/protected-get-users.webp'
+import logout1 from '@assets/posts/token-based-auth/logout.webp'
+import logout2 from '@assets/posts/token-based-auth/logout2.webp'
+
+Building web applications? You'll probably need user authentication. As developers, It’s our responsibility to safeguard user data and ensure that only authorized individuals gain access to protected resources.
+
+There are plenty of libraries available that handle authentication seamlessly, making our lives easier. However, there are instances when we simply want a straightforward authentication process or prefer to handle authentication ourselves without relying on a middleman. In such cases, we need to roll out our authentication, and that's perfectly fine!
+
+In this article, we'll embark on a journey to explore the world of token-based authentication using a powerful stack of technologies: [Fastify](https://fastify.dev/), JWT (JSON Web Tokens), and TypeScript. By the end of this article, you'll not only understand the fundamental concepts behind token-based authentication but also have a practical implementation that you can integrate into your projects.
+
+_NOTE: Not enough time to read, Check the code on github. [repo](https://github.com/arifimran5/jwt-auth-fastify)_
+
+We'll start by setting up our development environment and creating a user schema using Prisma. Then, we'll dive into the implementation details, covering user registration, login, and token management. Along the way, we'll address security best practices, including password hashing, and token expiration.
+
+_This article requires a basic understanding of Nodejs, Fastify, and Typescript._
+
+I hope you have opened your favorite text editor and API testing tool ([Postman](https://www.postman.com/downloads/), or whatever you use)
+
+## Initialize Project
+
+Initialize your project by running, I’ll be using pnpm for this app. You can replace it with npm or yarn easily.
+
+```bash
+pnpm init
+
+pnpm i fastify # as a dependency
+pnpm i -D typescript tsx @types/node #as dev dependencies
+```
+
+[tsx](https://github.com/esbuild-kit/tsx) ⇒ simple tool to compile and bundle your typescript files
+
+Create a `tsconfig.json` file at the root of your project and add these options (you can modify these options or add more according to your needs).
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "lib": ["ES2020"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+Create a src folder inside the root of your project. Then create the entry file of your app `app.ts`.
+
+Let’s move to `package.json` and create our scripts to run the application.
+
+```json
+"scripts": {
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/app.js"
+}
+```
+
+tsx watch will automatically restart the server on changes.
+
+It’s time to write some actual code, should we?
+
+Go to `app.ts` import `fastify` and initialize it.
+
+```tsx
+import Fastify from 'fastify'
+
+const app = Fastify({ logger: true }) // you can disable logging
+
+async function main() {
+  await app.listen({
+    port: 8000,
+    host: '0.0.0.0',
+  })
+}
+main()
+```
+
+this code sets up a basic Fastify server with logging enabled, listens on port 8000, and allows external access by binding to host '0.0.0.0'. It's the foundation upon which you can build your Fastify-based web application, adding routes, middleware, and other functionality as needed.
+
+Add a simple health-check route, to see if it’s working or not. Add this route after the app initialization.
+
+```tsx
+app.get('/healthcheck', (req, res) => {
+  res.send({ message: 'Success' })
+})
+```
+
+Run your server by running `pnpm dev` on the terminal, and see the log message if it’s successful or not. Go to Postman and perform a get request on `http://locahost:8000/healthcheck` endpoint. It should return a success message.
+
+<ImageWithCaption src={healthcheck} alt='Health check test in postman' />
+
+**Bonus**: Graceful shutdown is a crucial practice in server-side programming, and it involves handling termination signals (such as 'SIGINT' and 'SIGTERM') gracefully to ensure that your application can exit safely and without causing data corruption or abrupt disruptions.
+
+Add these lines in your `app.ts` before the main function
+
+```tsx
+// graceful shutdown
+const listeners = ['SIGINT', 'SIGTERM']
+listeners.forEach((signal) => {
+  process.on(signal, async () => {
+    await app.close()
+    process.exit(0)
+  })
+})
+```
+
+### App Structure
+
+Let’s discuss our app structure before writing more code.
+
+```markdown
+- src
+  - app.ts
+  - modules
+    - user
+      - user.route.ts
+      - user.schema.ts
+      - user.controller.ts
+```
+
+Our application is divided into modules. In our user module, we have 3 files
+
+- `user.route.ts` ⇒ handle user routes
+- `user.schema.ts` ⇒ handling input and response schemas
+- `user.controller.ts` ⇒ main logic of each route
+
+## User Routes
+
+Let’s create our user route. Go to `user.route.ts` and create a route function that receives the main app. Inside it, all the required routes are created which we are going to need for this application.
+
+```tsx
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+
+export async function userRoutes(app: FastifyInstance) {
+  app.get('/', (req: FastifyRequest, reply: FastifyReply) => {
+    reply.send({ message: '/ route hit' })
+  })
+
+  app.post('/register', () => {})
+
+  app.post('/login', () => {})
+
+  app.delete('/logout', () => {})
+
+  app.log.info('user routes registered')
+}
+```
+
+`app.post("/register" , {} , () => {})` ⇒ This is how we create a route in fastify, we provide the handler function at the end, which is currently an empty function. In the middle, we put our route options inside the curly braces like schema. We will also fill those later.
+
+### Registering route
+
+It’s time to let fastify know that these are our routes. And add a prefix of `api/user` before the route name.
+
+Inside `app.ts` register our routes _before_ the main function.
+
+```tsx
+// make sure to import userRoutes on top
+import { userRoutes } from './modules/user/user.route'
+
+// routes
+app.register(userRoutes, { prefix: 'api/users' })
+```
+
+Save your changes, go to Postman, and perform a GET request on the`/api/users` route.
+
+<ImageWithCaption src={getcheck} alt='Checking if route works' />
+
+## User Schema
+
+So before jumping to write the actual logic of authentication. Let’s take a moment and set up what data we want from users and what are we going to send them. We can create our schemas and pass them to fastify.
+
+To create and validate the schema we are going to use [zod](https://github.com/colinhacks/zod) package. And build our JSON schema with `fastify-zod`.
+
+```bash
+pnpm i zod fastify-zod
+```
+
+then head over to `user.schema.ts`
+
+```tsx
+import { z } from 'zod'
+import { buildJsonSchemas } from 'fastify-zod'
+
+// data that we need from user to register
+const createUserSchema = z.object({
+  email: z.string(),
+  password: z.string().min(6),
+  name: z.string(),
+})
+
+//exporting the type to provide to the request Body
+export type CreateUserInput = z.infer<typeof createUserSchema>
+
+// response schema for registering user
+const createUserResponseSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  name: z.string(),
+})
+
+// same for login route
+const loginSchema = z.object({
+  email: z
+    .string({
+      required_error: 'Email is required',
+      invalid_type_error: 'Email must be a string',
+    })
+    .email(),
+  password: z.string().min(6),
+})
+export type LoginUserInput = z.infer<typeof loginSchema>
+
+const loginResponseSchema = z.object({
+  accessToken: z.string(),
+})
+
+// to build our JSON schema, we use buildJsonSchemas from fastify-zod
+// it returns all the schemas to register and a ref to refer these schemas
+export const { schemas: userSchemas, $ref } = buildJsonSchemas({
+  createUserSchema,
+  createUserResponseSchema,
+  loginSchema,
+  loginResponseSchema,
+})
+```
+
+Now add these schemas with the fastify `addSchema` method. Inside `app.ts`, add these lines.
+
+```tsx
+for (let schema of [...userSchemas]) {
+  app.addSchema(schema)
+}
+```
+
+provide these schemas to register and login route. so make the changes inside `user.route.ts`
+
+```tsx
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+
+export async function userRoutes(app: FastifyInstance) {
+  app.get('/', (req: FastifyRequest, reply: FastifyReply) => {
+    reply.send({ message: '/ route hit' })
+  })
+
+  app.post(
+    '/register',
+    {
+      schema: {
+        body: $ref('createUserSchema'),
+        response: {
+          201: $ref('createUserResponseSchema'),
+        },
+      },
+    },
+    () => {},
+  )
+
+  app.post(
+    '/login',
+    {
+      schema: {
+        body: $ref('loginSchema'),
+        response: {
+          201: $ref('loginResponseSchema'),
+        },
+      },
+    },
+    () => {},
+  )
+
+  app.delete('/logout', () => {})
+
+  app.log.info('user routes registered')
+}
+```
+
+## Setting up [Prisma](https://prisma.io)
+
+So for storing the user data, you can use whatever database you like, you can write raw queries or use an ORM. For this article, I will be using Prisma orm with local sqlite db, because it’s just very easy to work with.
+
+To work with Prisma, first, install it as a dev dependency `pnpm i -D prisma`
+
+Now use the prisma cli to setup the required files.
+
+```bash
+npx prisma init
+
+#or
+
+pnpm prisma init
+```
+
+This command does two things:
+
+- creates a new directory called `prisma` that contains a file called `schema.prisma`, which contains the Prisma schema with your database connection variable and schema models
+- creates the `[.env` file](https://www.prisma.io/docs/guides/development-environment/environment-variables#using-env-files) in the root directory of the project, which is used for defining environment variables (such as your database connection)
+
+Although it is recommended to work with env file. But we are going to skip it for this article.
+
+Go to `schema.prisma` file and set up our database schema.
+
+```markdown
+generator client {
+provider = "prisma-client-js"
+}
+
+datasource db {
+provider = "sqlite"
+url = "file:./db/data.db" //providing the location of db, it will automatically create
+}
+
+model User {
+id String @id @default(cuid())
+email String @unique
+name String?
+password String
+}
+```
+
+Our `User` schema has a password column which we will hash before storing it.
+
+To create our table, we need to run our migration.
+
+```bash
+pnpm prisma migrate dev --name init
+# here you can name your migration anything, in this case, init
+```
+
+This command does two things:
+
+1. It creates a new SQL migration file for this migration
+2. It runs the SQL migration file against the database
+
+To perform queries on our database, we need `@prisma/client` . Prisma migrate will automatically install the client, if not, we can manually install it as a dependency `pnpm i @prisma/client`
+
+Now, let’s expose a client to the application by exporting it.
+
+Create a `utils` directory at the root and create a `prisma.ts` file. And these few lines.
+
+```tsx
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+
+export default prisma
+```
+
+## Registering User
+
+Let’s break down, How are we going to register the user!
+
+1. Get the user details from the request body
+2. Although our db schema says, it’s unique, we will still check if the email already exists, if yes, we will return the error message from there only.
+3. We will hash our password with `bcrypt` package.
+4. Create the user with `prisma.user.create()`
+
+First, install the dependencies for hashing the password
+
+```bash
+pnpm i bcrypt
+pnpm i -D @types/bcrypt
+```
+
+Head over to `user.controller.ts`, and create an async function `createUser`.
+
+```tsx
+import { FastifyReply, FastifyRequest } from 'fastify'
+import { CreateUserInput, LoginUserInput } from './user.schema'
+import bcrypt from 'bcrypt'
+import prisma from '../../utils/prisma'
+
+const SALT_ROUNDS = 10
+
+export async function createUser(
+  req: FastifyRequest<{
+    Body: CreateUserInput
+  }>,
+  reply: FastifyReply,
+) {
+  const { password, email, name } = req.body
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  })
+  if (user) {
+    return reply.code(401).send({
+      message: 'User already exists with this email',
+    })
+  }
+
+  try {
+    const hash = await bcrypt.hash(password, SALT_ROUNDS)
+    const user = await prisma.user.create({
+      data: {
+        password: hash,
+        email,
+        name,
+      },
+    })
+
+    return reply.code(201).send(user)
+  } catch (e) {
+    return reply.code(500).send(e)
+  }
+}
+```
+
+Finally, add this exported function to our `/register` route in `user.route.ts`
+
+```tsx
+// on top => import { createUser } from './user.controller'
+
+app.post(
+  '/register',
+  {
+    schema: {
+      body: $ref('createUserSchema'),
+      response: {
+        201: $ref('createUserResponseSchema'),
+      },
+    },
+  },
+  createUser,
+)
+```
+
+That’s it, hop over to Postman and test it. And we will get our response according to our schema.
+
+<ImageWithCaption src={registerRoute} alt='Testing Registering user' />
+
+## Setting up JWT and cookies
+
+Before moving ahead with Login logic, we will need JWT and cookies in our application. For that we are going to use, `@fastify/jwt` and `@fastify-cookie`
+
+```bash
+pnpm i @fastify/jwt @fastify-cookie
+```
+
+Now, inside `app.ts`, we will register our JWT and cookie.
+
+```tsx
+import fjwt, { FastifyJWT } from '@fastify/jwt'
+import fCookie from '@fastify/cookie'
+
+// jwt
+app.register(fjwt, { secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE' })
+
+app.addHook('preHandler', (req, res, next) => {
+  // here we are
+  req.jwt = app.jwt
+  return next()
+})
+
+// cookies
+app.register(fCookie, {
+  secret: 'some-secret-key',
+  hook: 'preHandler',
+})
+```
+
+Let’s take a look at what sorcery happened above
+
+1. First, we imported both of the packages
+2. register the fastify-jwt and pass secret (in production, use env for this)
+3. Then we created a hook and passed the `app.jwt` to its request object. In Fastify, a prehandler hook is a powerful and flexible feature that allows you to execute logic before a route handler is called. It provides a way to perform tasks such as authentication, validation, data transformation, or any other processing that should occur prior to the actual route handler being invoked.
+4. Finally, we register our `@fastify/cookie` . The `hook` option allows you to determine at which stage of request processing the plugin should handle cookies. In our code, the hook is set to `'preHandler'`.
+
+I am sure your typescript is screaming at you, What is `req.jwt`.
+
+So to fix this, we need to let fastify know, what this is. Create a `types.ts` file inside utils.
+
+```tsx
+import { JWT } from '@fastify/jwt'
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    jwt: JWT
+  }
+}
+```
+
+Your typescript will be happy now. Note: We will add more lines to this file soon. Because Typescript is a strict parent 😒
+
+## Login user
+
+Now to handle login, let’s see what steps we are going to take
+
+1. Get the email and password from the user.
+2. Check if this user exists or not. If not, send error message
+3. Then we compare our user’s password with our hash using `bcrypt`
+4. If the password is also correct, we create a JWT token with our user data.
+5. Then we securely set the cookie, so that the client always requests with this cookie in the header.
+6. Finally, we send back the token (also it can be manually used as a bearer token for authorization)
+
+In, `user.controller.ts`
+
+```tsx
+export async function login(
+  req: FastifyRequest<{
+    Body: LoginUserInput
+  }>,
+  reply: FastifyReply,
+) {
+  const { email, password } = req.body
+  const user = await prisma.user.findUnique({ where: { email: email } })
+
+  if (!user) {
+    return reply.code(401).send({
+      message: 'Invalid email or password',
+    })
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password)
+  if (!isMatch) {
+    return reply.code(401).send({
+      message: 'Invalid email or password',
+    })
+  }
+  const payload = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+  }
+  const token = req.jwt.sign(payload)
+
+  reply.setCookie('access_token', token, {
+    path: '/',
+    httpOnly: true,
+    secure: true,
+  })
+
+  return { accessToken: token }
+}
+```
+
+Add this handler to `/login` route in `user.route.ts`
+
+```tsx
+// DONT FORGET TO import {login} from './user.controller'
+
+app.post(
+  '/login',
+  {
+    schema: {
+      body: $ref('loginSchema'),
+      response: {
+        201: $ref('loginResponseSchema'),
+      },
+    },
+  },
+  login,
+)
+```
+
+Time to check, if it works. We use the email and password we created earlier to log in.
+
+<ImageWithCaption src={loginRoute} alt='Testing Logging in user' />
+
+It returns the token and also sets it to cookies. We are in.
+
+<ImageWithCaption
+  src={cookieSet}
+  alt='Cookie has been set in the client. Here Postman'
+/>
+
+## Protected Routes
+
+We are authenticated, Registered, and Logged in. But we don’t need to protect our every route. There could be resources that can be used by `not logged-in` users also. So we will manually protect those routes, which are only for authenticated users.
+
+For that we can manually check if the header for cookies and verify the token, every time. Or we can use fastify decorate for that.
+
+In Fastify, `decorate` is a method that allows you to extend the functionality of Fastify's core objects, such as the Fastify instance (`fastify`), the request object (`request`), or the reply object (`reply`). It's a powerful feature that enables you to add custom properties, methods, or utilities to these objects, making them available throughout your Fastify application.
+
+In our `app.ts`, add these lines after registering `@fastify-jwt`.
+
+```tsx
+app.decorate(
+  'authenticate',
+  async (req: FastifyRequest, reply: FastifyReply) => {
+    const token = req.cookies.access_token
+
+    if (!token) {
+      return reply.status(401).send({ message: 'Authentication required' })
+    }
+    // here decoded will be a different type by default but we want it to be of user-payload type
+    const decoded = req.jwt.verify<FastifyJWT['user']>(token)
+    req.user = decoded
+  },
+)
+```
+
+Let’s break it down.
+
+1. We are accessing our token
+2. If there is no token, the user is not authenticated
+3. else, we verify that token with `jwt.verify`
+4. Finally, we attach our current user payload to the request object.
+
+Your typescript must be crying now, again. 😭 To fix that. Head over to `types.ts` in utils. And add these lines for the typescript to be happy.
+
+```tsx
+import { JWT } from '@fastify/jwt'
+
+// adding jwt property to req
+// authenticate property to FastifyInstance
+declare module 'fastify' {
+  interface FastifyRequest {
+    jwt: JWT
+  }
+  export interface FastifyInstance {
+    authenticate: any
+  }
+}
+
+type UserPayload = {
+  id: string
+  email: string
+  name: string
+}
+
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    user: UserPayload
+  }
+}
+```
+
+Now, protect your route with `authenticate` prehandler. Go to `user.route.ts`.
+
+```tsx
+//add prehandler to the root route
+app.get(
+  '/',
+  {
+    preHandler: [app.authenticate],
+  },
+  getUsers,
+)
+```
+
+Time to create that getUsers controller, Go to `user.controller.ts`
+
+```tsx
+export async function getUsers(req: FastifyRequest, reply: FastifyReply) {
+  const users = await prisma.user.findMany({
+    select: {
+      name: true,
+      id: true,
+      email: true,
+    },
+  })
+
+  return reply.code(200).send(users)
+}
+```
+
+It’s time to check whether we were successful in protecting our route or not.
+
+<ImageWithCaption src={protectedRoute} alt='Testing the protected route' />
+
+Now, if you are using Postman, try removing the access_token from cookies. And see if we still get the result. Also, you can test this with the last route, which is logout.
+
+## Logout
+
+It’s very easy, just clear the cookies.
+
+```tsx
+export async function logout(req: FastifyRequest, reply: FastifyReply) {
+  reply.clearCookie('access_token')
+
+  return reply.send({ message: 'Logout successful' })
+}
+```
+
+Add this logout handler to our `/logout` route in `user.route.ts`. It’s also a protected route because only a logged-in user can logout. Right.
+
+```tsx
+app.delete('/logout', { preHandler: [app.authenticate] }, logout)
+```
+
+Let’s test this.
+
+<ImageWithCaption src={logout1} alt='Logging out User' />
+
+Now, try to access the `/api/users` getAllUser routes. And see if it is protected or not.
+
+<ImageWithCaption
+  src={logout2}
+  alt='If user is logged out, we cannot access the route'
+/>
+
+_**Final Code => [repo](https://github.com/arifimran5/jwt-auth-fastify)**_
+
+In our journey through token-based authentication with Fastify, JWT, and TypeScript, we’ve learned how to create secure and user-friendly authentication systems. Fastify's speed and flexibility, along with JWTs, give us a strong foundation. From starting our project to protecting routes, we've got the basics down. As we move forward, know that our apps are secure, our users are safe, and we are ready to create amazing things. Happy coding!
