@@ -2,14 +2,24 @@ import { defineConfig } from 'astro/config'
 import tailwind from '@astrojs/tailwind'
 import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
-import vercel from '@astrojs/vercel/serverless'
-
 import sitemap from '@astrojs/sitemap'
+
+import partytown from '@astrojs/partytown'
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://thatarif.in',
-  integrations: [tailwind(), react(), mdx(), sitemap()],
+  integrations: [
+    tailwind(),
+    react(),
+    mdx(),
+    sitemap(),
+    partytown({
+      config: {
+        forward: ['dataLayer.push'],
+      },
+    }),
+  ],
   markdown: {
     shikiConfig: {
       // Choose from Shiki's built-in themes (or add your own)
@@ -18,10 +28,4 @@ export default defineConfig({
       langs: [],
     },
   },
-  output: 'server',
-  adapter: vercel({
-    webAnalytics: {
-      enabled: true,
-    },
-  }),
 })
