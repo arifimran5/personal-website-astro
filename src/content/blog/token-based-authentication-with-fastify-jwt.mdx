@@ -516,8 +516,8 @@ Your typescript will be happy now. Note: We will add more lines to this file soo
 Now to handle login, let’s see what steps we are going to take
 
 1. Get the email and password from the user.
-2. Check if this user exists or not. If not, send error message
-3. Then we compare our user’s password with our hash using `bcrypt`
+2. Check if this user exists or not.
+3. If user exists, we compare our user’s password with our hash using `bcrypt`
 4. If the password is also correct, we create a JWT token with our user data.
 5. Then we securely set the cookie, so that the client always requests with this cookie in the header.
 6. Finally, we send back the token (also it can be manually used as a bearer token for authorization)
@@ -534,18 +534,13 @@ export async function login(
   const { email, password } = req.body
   const user = await prisma.user.findUnique({ where: { email: email } })
 
-  if (!user) {
+  const isMatch = user && (await bcrypt.compare(password, user.password))
+  if (!user || !isMatch) {
     return reply.code(401).send({
       message: 'Invalid email or password',
     })
   }
 
-  const isMatch = await bcrypt.compare(password, user.password)
-  if (!isMatch) {
-    return reply.code(401).send({
-      message: 'Invalid email or password',
-    })
-  }
   const payload = {
     id: user.id,
     email: user.email,
