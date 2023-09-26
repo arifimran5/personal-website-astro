@@ -17,6 +17,7 @@
     "@astrojs/react": "^3.0.2",
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "^5.0.0",
+    "@astrojs/vercel": "^5.0.1",
     "@fontsource/handjet": "^5.0.3",
     "@fontsource/inter": "^5.0.8",
     "@types/react": "^18.2.22",

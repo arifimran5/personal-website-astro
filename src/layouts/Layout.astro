@@ -50,7 +50,7 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
     <ViewTransitions />
     <title>{title}</title>
   </head>
-  <body class='bg-gray-950 relative min-h-screen' transition:animate='none'>
+  <body class='bg-gray-950 relative min-h-screen'>
     <div
       class='absolute flex justify-center z-[-999] inset-0 pointer-events-none bg-center bg-[url(/assets/paper-bg-dark.jpg)]'
     >
@@ -84,7 +84,7 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
           >
         </div>
       </header>
-      <div transition:animate={'slide'}>
+      <div transition:animate='fade'>
         <slot />
       </div>
 
@@ -114,20 +114,5 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
         border-radius: 20px;
       }
     </style>
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      type='text/partytown'
-      async
-      src='https://www.googletagmanager.com/gtag/js?id=G-TWWDC6BFS5'></script>
-    <script type='text/partytown'>
-      window.dataLayer = window.dataLayer || []
-      function gtag() {
-        dataLayer.push(arguments)
-      }
-      gtag('js', new Date())
-
-      gtag('config', 'G-TWWDC6BFS5')
-    </script>
   </body>
 </html>
