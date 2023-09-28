@@ -5,6 +5,8 @@ import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import vercel from '@astrojs/vercel/serverless'
 
+import partytown from '@astrojs/partytown'
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://thatarif.in',
@@ -13,6 +15,11 @@ export default defineConfig({
     react(),
     mdx(),
     sitemap(),
+    partytown({
+      config: {
+        forward: ['dataLayer.push'],
+      },
+    }),
   ],
   output: 'server',
   adapter: vercel({
