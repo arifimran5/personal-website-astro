@@ -515,7 +515,7 @@ Your typescript will be happy now. Note: We will add more lines to this file soo
 
 Now to handle login, let’s see what steps we are going to take
 
-1. Get the email and password from the user.
+1. Get the email and password from the user, (validate it to prevent SQL injection)
 2. Check if this user exists or not.
 3. If user exists, we compare our user’s password with our hash using `bcrypt`
 4. If the password is also correct, we create a JWT token with our user data.
@@ -532,6 +532,12 @@ export async function login(
   reply: FastifyReply,
 ) {
   const { email, password } = req.body
+
+  /*
+   MAKE SURE TO VALIDATE (according to you needs) user data
+   before performing the db query
+  */
+
   const user = await prisma.user.findUnique({ where: { email: email } })
 
   const isMatch = user && (await bcrypt.compare(password, user.password))
