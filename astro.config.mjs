@@ -4,8 +4,9 @@ import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import vercel from '@astrojs/vercel/serverless'
-
 import partytown from '@astrojs/partytown'
+
+import robotsTxt from 'astro-robots-txt'
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,6 +21,7 @@ export default defineConfig({
         forward: ['dataLayer.push'],
       },
     }),
+    robotsTxt(),
   ],
   output: 'server',
   adapter: vercel({
