@@ -47,6 +47,22 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
     <meta property='twitter:url' content={canonicalURL} />
     <meta property='twitter:title' content={title} />
     <meta property='twitter:description' content={desc} />
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      type='text/partytown'
+      async
+      src='https://www.googletagmanager.com/gtag/js?id=G-TWWDC6BFS5'></script>
+    <script type='text/partytown'>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+
+      gtag('config', 'G-TWWDC6BFS5')
+    </script>
+
     <ViewTransitions fallback='none' />
     <title>{title}</title>
   </head>
@@ -114,20 +130,5 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
         border-radius: 20px;
       }
     </style>
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      type='text/partytown'
-      async
-      src='https://www.googletagmanager.com/gtag/js?id=G-TWWDC6BFS5'></script>
-    <script type='text/partytown'>
-      window.dataLayer = window.dataLayer || []
-      function gtag() {
-        dataLayer.push(arguments)
-      }
-      gtag('js', new Date())
-
-      gtag('config', 'G-TWWDC6BFS5')
-    </script>
   </body>
 </html>
