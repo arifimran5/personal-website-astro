@@ -11,8 +11,9 @@ const sortedPosts = getSortedPosts(posts)
 
 <Layout title='Blogs'>
   <h1 class='text-4xl font-fun text-text_primary'>Blog</h1>
+  <span class='text-sm italic text-text_secondary'>Yada kada I do this</span>
 
-  <div class='text-text_secondary'>
+  <div class='text-text_secondary font-round'>
     {
       sortedPosts.map((post) => (
         <div class='mt-5'>

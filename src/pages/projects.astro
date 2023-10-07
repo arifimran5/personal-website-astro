@@ -7,8 +7,8 @@ export const prerender = true
 ---
 
 <Layout title='Projects'>
-  <h1 class='text-4xl font-fun text-text_primary'>Project</h1>
-  <span class='text-sm italic text-text_secondary'>some fun some not</span>
+  <h1 class='text-4xl font-fun text-text_primary'>Projects</h1>
+  <span class='text-sm italic text-text_secondary'>When I want to learn</span>
   <section transition:name='projects'>
     <div class='mt-4'>
       {projects.slice(0, 3).map((p) => <ProjectCard project={p} />)}

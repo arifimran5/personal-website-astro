@@ -1,6 +1,7 @@
 ---
 import '@fontsource/inter'
 import '@fontsource/handjet/500.css'
+import '@fontsource/outfit'
 import { ViewTransitions } from 'astro:transitions'
 import Footer from '../components/Footer.astro'
 
@@ -32,8 +33,9 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
     <meta charset='UTF-8' />
     <meta name='description' content={desc} />
     <meta name='viewport' content='width=device-width' />
+    <link rel='manifest' href='manifest.json' />
     <link rel='sitemap' href='/sitemap-index.xml' />
-    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <link rel='icon' href='/favicon/favicon.ico' />
     <meta name='generator' content={Astro.generator} />
 
     <!-- Open Graph / Facebook -->
@@ -77,7 +79,7 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
     </div>
 
     <main class='max-w-2xl px-4 mx-auto md:px-0'>
-      <header class='flex justify-between py-8 md:mb-10'>
+      <header class='flex justify-between py-8 md:mb-10 font-round'>
         <a
           class='italic text-[#636363] underline transition-colors duration-200 hover:text-accent'
           href='/'>thatarif</a
@@ -96,7 +98,7 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
           <span class='text-[#636363]'>/</span>
           <a
             class='italic underline text-[#636363] transition-colors duration-200 hover:text-accent'
-            href='/projects'>project</a
+            href='/projects'>projects</a
           >
         </div>
       </header>
