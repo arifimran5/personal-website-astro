@@ -3,8 +3,9 @@ module.exports = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     fontFamily: {
-      sans: ['Inter', 'system-ui'],
-      fun: ['handjet'],
+      sans: ['Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
+      round: ['Outfit', 'Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
+      fun: ['handjet', 'Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
       mono: ['Menlo', 'Liberation Mono', 'monospace'],
     },
     extend: {
