@@ -328,21 +328,21 @@ Although it is recommended to work with env file. But we are going to skip it fo
 
 Go to `schema.prisma` file and set up our database schema.
 
-```markdown
+```
 generator client {
-provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-provider = "sqlite"
-url = "file:./db/data.db" //providing the location of db, it will automatically create
+  provider = "sqlite"
+  url = "file:./db/data.db" //providing the location of db, it will automatically create
 }
 
 model User {
-id String @id @default(cuid())
-email String @unique
-name String?
-password String
+  id String @id @default(cuid())
+  email String @unique
+  name String?
+  password String
 }
 ```
 
