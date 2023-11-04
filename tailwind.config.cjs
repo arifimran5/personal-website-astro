@@ -6,7 +6,12 @@ module.exports = {
       sans: ['Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
       round: ['Outfit', 'Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
       fun: ['handjet', 'Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
-      mono: ['Menlo', 'Liberation Mono', 'monospace'],
+      mono: [
+        'JetBrains Mono Variable',
+        'Menlo',
+        'Liberation Mono',
+        'monospace',
+      ],
     },
     extend: {
       colors: {

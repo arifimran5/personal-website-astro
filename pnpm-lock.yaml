@@ -23,6 +23,9 @@ dependencies:
   '@astrojs/vercel':
     specifier: ^5.0.1
     version: 5.0.1(astro@3.1.1)
+  '@fontsource-variable/jetbrains-mono':
+    specifier: ^5.0.18
+    version: 5.0.18
   '@fontsource/handjet':
     specifier: ^5.0.3
     version: 5.0.3
@@ -885,6 +888,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@fontsource-variable/jetbrains-mono@5.0.18:
+    resolution: {integrity: sha512-8qyD5zmaB4X9EQsGViwHGcQPjOGsHGxyJ+DuAxkXVyP+/Mzb5B9kYuG8+8a3vX/y0mZ81CUpbUWp0ik89c3dQw==}
+    dev: false
 
   /@fontsource/handjet@5.0.3:
     resolution: {integrity: sha512-tKJ6s63yQlPW2jtFcdlkDl5BL/aXe21j6T/idz+Z0kFq+1GFErGzS50Vk26pTUtyJEfJtsXJTGpqfAWV15R6Ww==}
