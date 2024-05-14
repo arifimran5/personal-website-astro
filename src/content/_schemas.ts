@@ -16,13 +16,3 @@ export const blogSchema = z
   .strict()
 
 export type BlogFrontmatter = z.infer<typeof blogSchema>
-
-export const craftSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  github: z.string().url().optional(),
-  datetime: z.date(),
-  draft: z.boolean(),
-})
-
-export type CraftFrontMatter = z.infer<typeof craftSchema>
