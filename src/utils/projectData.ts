@@ -6,6 +6,7 @@ export const projects = [
     technologies: ['React', 'NextJS', 'TailwindCSS', 'TMDB API'],
     github: 'https://github.com/arifimran5/cinegeekV2',
     live: 'https://cinegeek.vercel.app',
+    featured: true,
   },
   {
     id: 2,
@@ -21,15 +22,38 @@ export const projects = [
     ],
     github: 'https://github.com/arifimran5/twipper',
     live: 'https://twipper.vercel.app',
+    featured: true,
   },
   {
     id: 3,
+    title: 'Jwt Auth with Fastify, JWT, and Typescript',
+    description: 'simple token based auth pattern.',
+    technologies: ['Fastify', 'JWT', 'Typescript', 'Prisma'],
+    github: 'https://github.com/arifimran5/jwt-auth-fastify',
+    featured: true,
+  },
+  {
+    id: 4,
     title: 'cinegeek',
     description:
       'A movie listing application that provides details about movies based on popularity, rating, and different genres.',
     technologies: ['React', 'Vite', 'TailwindCSS', 'TMDB API'],
     github: 'https://github.com/arifimran5/cinegeek',
     live: 'https://cinegeek.netlify.app',
+    featured: false,
+  },
+  {
+    id: 5,
+    title: 'StoreFront',
+    description: 'An e-commerce storefront',
+    technologies: [
+      'ASP .Net Core',
+      'SQL Server',
+      'Entity Framework Core',
+      'Angular',
+    ],
+    github: 'https://github.com/arifimran5/StoreFront',
+    featured: true,
   },
 ]
 
