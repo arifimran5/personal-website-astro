@@ -2,6 +2,7 @@
   "jsxSingleQuote": true,
   "singleQuote": true,
   "semi": false,
+  "useTabs": false,
   "plugins": ["prettier-plugin-astro"],
   "overrides": [
     {

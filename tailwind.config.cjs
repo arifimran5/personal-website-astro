@@ -7,6 +7,7 @@ module.exports = {
       round: ['Outfit', 'Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
       fun: ['handjet', 'Inter', 'system-ui', 'Roboto', 'Arial', 'sans-serif'],
       mono: [
+        'Source Code Pro',
         'JetBrains Mono Variable',
         'Menlo',
         'Liberation Mono',
