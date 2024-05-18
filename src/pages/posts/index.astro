@@ -3,8 +3,6 @@ import Layout from '@layouts/Layout.astro'
 import { getCollection } from 'astro:content'
 import { getSortedPosts } from '@utils/helper'
 
-export const prerender = true
-
 const posts = await getCollection('blog')
 const sortedPosts = getSortedPosts(posts)
 ---

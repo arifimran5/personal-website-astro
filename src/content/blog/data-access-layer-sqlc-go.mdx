@@ -1,0 +1,29 @@
+---
+title: Data Access Layer with SQLC and Go
+description: How to use SQLC to build a data access layer in Go.
+pubDatetime: 2024-05-16T17:40:38.113Z
+author: Arif Imran
+featured: false
+draft: true
+tags:
+  - backend
+  - go
+  - postgres
+postSlug: data-access-layer-with-sqlc-and-go
+# ogImage: 'token-based-auth.jpg'
+---
+
+Table of Contents
+
+1. [why sqlc](#why-sqlc)
+2. [how to use sqlc with go](#how-to-use-sqlc-with-go)
+3. [postgres](#postgres)
+4. [creating a data access layer](#creating-a-data-access-layer)
+5. [goose for migration](#goose-for-migration)
+6. [makefile for commands](#makefile-for-commands)
+7. [generating sqlc models](#generating-sqlc-models)
+8. [testing the generated codes](#testing-the-generated-codes)
+
+-- end note --
+
+> My only Problem with sqlc is that it creates it's own struct from the table defination as the type of values in the generated methods. So, I have to write a lot of boilerplate code to convert the values to the struct type of my choice.

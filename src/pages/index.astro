@@ -6,8 +6,6 @@ import { getCollection } from 'astro:content'
 import { getFeaturedPosts } from '@utils/helper'
 import Cta from '@components/Cta.astro'
 
-export const prerender = true
-
 const posts = await getCollection('blog')
 const featured_posts = getFeaturedPosts(posts)
 ---
