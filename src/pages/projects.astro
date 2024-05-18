@@ -11,7 +11,7 @@ import { projects } from '@utils/projectData'
   >
   <section transition:name='projects'>
     <div class='mt-4 font-round'>
-      {projects.slice(0, 3).map((p) => <ProjectCard project={p} />)}
+      {projects.map((p) => <ProjectCard project={p} />)}
     </div>
   </section>
 </Layout>

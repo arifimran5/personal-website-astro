@@ -47,6 +47,7 @@ export const projects = [
     title: 'StoreFront',
     description: 'An e-commerce storefront',
     technologies: [
+      'C#',
       'ASP .Net Core',
       'SQL Server',
       'Entity Framework Core',
