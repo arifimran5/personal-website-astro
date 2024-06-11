@@ -1,29 +1,317 @@
 ---
 title: Data Access Layer with SQLC and Go
-description: How to use SQLC to build a data access layer in Go.
-pubDatetime: 2024-05-16T17:40:38.113Z
+description: How to use sqlc to build a data access layer in Go.
+pubDatetime: 2024-06-11T15:02:47.396Z
 author: Arif Imran
-featured: false
-draft: true
+featured: true
+draft: false
 tags:
   - backend
   - go
   - postgres
 postSlug: data-access-layer-with-sqlc-and-go
-# ogImage: 'token-based-auth.jpg'
+ogImage: 'data-access-sqlc.jpg'
 ---
 
-Table of Contents
+Every application code requires a data layer for interacting with the database to perform queries and mutations. Directly querying the database in Go can be tedious due to the verbosity and the extensive boilerplate code required for error handling and data manipulation.
 
-1. [why sqlc](#why-sqlc)
-2. [how to use sqlc with go](#how-to-use-sqlc-with-go)
-3. [postgres](#postgres)
-4. [creating a data access layer](#creating-a-data-access-layer)
-5. [goose for migration](#goose-for-migration)
-6. [makefile for commands](#makefile-for-commands)
-7. [generating sqlc models](#generating-sqlc-models)
-8. [testing the generated codes](#testing-the-generated-codes)
+During my experience with Go, I found the approach of building my database layer with sqlc to be quite effective.
 
--- end note --
+Another excellent package for working with databases in Go is `sqlx`. This package allows us to write raw SQL queries, providing a balance between the control of writing raw SQL and the convenience of a query builder. `sqlx` helps us reduce the boilerplate code of marshalling and unmarshalling data when working with SQL databases.
 
-> My only Problem with sqlc is that it creates it's own struct from the table defination as the type of values in the generated methods. So, I have to write a lot of boilerplate code to convert the values to the struct type of my choice.
+However, despite its benefits, using 'sqlx' still requires a significant amount of work. The developers need to manually write all the SQL queries and handle the potential errors that might come with it.
+
+That being said, 'sqlx' shines when you need fine-grained control over your queries and mutations. If you need to write complex queries or want to optimize your database interactions to the smallest detail, 'sqlx' provides the flexibility to do so.
+
+In conclusion, while 'sqlc' offers speed and efficiency by auto-generating Go code, 'sqlx' provides flexibility and control. The choice between the two will depend on your specific needs and the complexity of your database operations.
+
+**sqlc -**
+
+The documentation states,
+
+> sqlc generates fully type-safe idiomatic Go code from SQL.
+
+To explain sqlc in three steps: _write SQL, generate Go code, call methods._
+
+It’s that simple. Just like in gRPC where we define our API flow as .proto files and then generate the Go code, similar process is carried out here where we define our SQL queries and sqlc generates idiomatic Go code that we can use in our application.
+
+Enough Talk :)
+
+Let’s just write some code and explore how we can accomplish our goal using sqlc, Postgres, and Go. We'll also use Goose as a migration tool. You can install Goose from [this link](https://github.com/pressly/goose). For installing sqlc, refer to the [installation page](https://docs.sqlc.dev/en/latest/overview/install.html).
+
+## Setting up the project
+
+We will be building the famous example of patient, doctor and appointment. we need a postgres db connection, either use the postgres engine or use docker to run a postgres container.
+
+```bash
+docker run --name postgres12 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
+```
+
+The project's GitHub repository contains a Makefile with all necessary commands to run the project. To get started, you'll need to initiate a Go module. Next, create a directory named 'db' and within this, create a subdirectory named 'migrations'. This is where we'll store all goose migrations.
+
+use goose cli to create the migration file.
+
+```bash
+goose -dir db/migrations create add_tables sql
+```
+
+The migration file, created with the current timestamp, is divided into two parts by Goose: 'up' and 'down'. We write 'up' queries between **StatementBegin** and **StatementEnd**.
+
+```sql
+-- +goose Up
+-- +goose StatementBegin
+CREATE TABLE doctors (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    speciality VARCHAR(255)
+);
+
+CREATE TABLE patients (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    age INTEGER
+);
+
+CREATE TABLE appointments (
+    id SERIAL PRIMARY KEY,
+    doctor_id INTEGER NOT NULL,
+    patient_id INTEGER NOT NULL,
+    appointment_date DATE NOT NULL,
+    FOREIGN KEY (doctor_id) REFERENCES doctors (id),
+    FOREIGN KEY (patient_id) REFERENCES patients (id)
+);
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE IF EXISTS appointments;
+
+DROP TABLE IF EXISTS doctors;
+
+DROP TABLE IF EXISTS patients;
+-- +goose StatementEnd
+```
+
+Now we can migrate this sql file with goose.
+
+Syntax : `goose [OPTIONS] DRIVER DBSTRING COMMAND`
+
+```sql
+goose -dir db/migrations postgres "postgresql://root:secret@localhost:5432/yourdb" up
+```
+
+Check your preferred database client whether the tables are created or not.
+
+Our tables are set. Now, it's time to set up SQLC. To do this, we need to configure it using the `sqlc.yaml` file. Create this file and write the following lines.
+
+```yaml
+version: '2'
+sql:
+  - engine: 'postgresql'
+    queries: './db/queries'
+    schema: './db/migrations'
+    gen:
+      go:
+        package: 'db'
+        out: './db'
+        sql_package: 'pgx/v5'
+```
+
+Here, we provide the engine details, the location for our queries, and the table schema. You can learn more about the configuration [here](https://docs.sqlc.dev/en/latest/reference/config.html). It's important to note that we are using `pgx/v5` as our Postgres driver. Therefore, you must install this package with the command `go get github.com/jackc/pgx/v5` . [Link](https://github.com/jackc/pgx/)
+
+## Writing Queries
+
+Let’s define our sqlc queries within their respective files. The syntax for writing queries so that sqlc can generate valid go code is very simple. `*-- name: <name> <command>*` .We need to Provide `Name` of the function and what it will return, or should it just execute the command. Read more about `query annotations` [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html) .
+
+Query parameters are indicated differently in different databases. For instance, in Postgres, we use `$1, $2 ..`, whereas MySQL utilizes `?`.
+
+```sql
+-- name: GetAuthor :one
+SELECT * FROM authors
+WHERE id = $1 LIMIT 1;
+
+-- name: ListAuthors :many
+SELECT * FROM authors
+ORDER BY name;
+
+-- name: CreateAuthor :one
+INSERT INTO authors (
+  name, bio
+) VALUES (
+  $1, $2
+)
+RETURNING *;
+
+-- name: UpdateAuthor :exec
+UPDATE authors
+  set name = $2,
+  bio = $3
+WHERE id = $1;
+```
+
+**Doctor queries**
+
+```sql
+-- name: CreateDoctor :exec
+INSERT INTO doctors (name, speciality) VALUES ($1, $2);
+
+-- name: GetDoctor :one
+SELECT * FROM doctors WHERE id = $1;
+
+-- name: GetDoctors :many
+SELECT * FROM doctors;
+
+-- name: UpdateDoctor :exec
+UPDATE doctors SET name = $1, speciality = $2 WHERE id = $3;
+
+-- name: DeleteDoctor :exec
+DELETE FROM doctors WHERE id = $1;
+```
+
+**Patient Queries**
+
+```sql
+-- name: CreatePatient :exec
+INSERT INTO patients (name, age) VALUES ($1, $2);
+
+-- name: GetPatient :one
+SELECT * FROM patients WHERE id = $1;
+
+-- name: GetPatients :many
+SELECT * FROM patients;
+
+-- name: UpdatePatient :exec
+UPDATE patients SET name = $1, age = $2 WHERE id = $3;
+
+-- name: DeletePatient :exec
+DELETE FROM patients WHERE id = $1;
+```
+
+**Appointment Queries**
+
+```sql
+-- name: CreateAppointment :exec
+INSERT INTO
+    appointments (
+        doctor_id,
+        patient_id,
+        appointment_date
+    )
+VALUES ($1, $2, $3);
+
+-- name: GetAppointmentsByDoctor :many
+SELECT
+    d.id AS doctor_id,
+    d.name AS doctor_name,
+    p.id AS patitent_id,
+    p.name AS patient_name,
+    p.age AS patient_age,
+    a.appointment_date
+FROM
+    doctors d
+    JOIN appointments a ON d.id = a.doctor_id
+    JOIN patients p ON a.patient_id = p.id
+WHERE
+    d.id = $1
+ORDER BY a.appointment_date;
+
+-- name: GetAppointmentsByPatient :many
+SELECT
+    d.id AS doctor_id,
+    d.name AS doctor_name,
+    p.id AS patitent_id,
+    p.name AS patient_name,
+    p.age AS patient_age,
+    a.appointment_date
+FROM
+    doctors d
+    JOIN appointments a ON d.id = a.doctor_id
+    JOIN patients p ON a.patient_id = p.id
+WHERE
+    p.id = $1
+ORDER BY a.appointment_date;
+```
+
+Doctors and Patients queries are just simple crud operations, and we are performing simple join operations for the appointments.
+
+## Generating Go Code
+
+Execute `sqlc generate` from the root of the project and see the compilation magic yourself.
+
+It will create go code for each queries and also database models to use. To interact with queries, it also generates the `db.go` file which encapsulates all the queries within the package.
+
+## Testing the generated code
+
+To demonstrate we are going to directly use the generated methods. So, Inside `main.go` establish the **db connection**.
+
+```go
+ 	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, "postgres://root:secret@localhost:5432/dbSqlcPg?sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close(ctx)
+```
+
+**provide the connection to the db.**
+
+```go
+queries := db.New(conn)
+```
+
+That’s it.
+
+Let’s write four operations, first to create a doctor, then create a patient, then we will create an appointment and finally we will get all the appointments of a doctor.
+
+```go
+// create a doctor
+queries.CreateDoctor(ctx, db.CreateDoctorParams{
+	Name: "Dr. Brother",
+	Speciality: pgtype.Text{
+		String: "Optician",
+		Valid:  true,
+	},
+})
+```
+
+```go
+// create a patient
+queries.CreatePatient(ctx, db.CreatePatientParams{
+	Name: "Bob Smith",
+	Age: pgtype.Int4{
+		Int32: 53,
+		Valid: true,
+	},
+})
+```
+
+```go
+// create an appointment
+queries.CreateAppointment(ctx, db.CreateAppointmentParams{
+	DoctorID:  2,
+	PatientID: 2,
+	AppointmentDate: pgtype.Date{
+		Time:  time.Now().Add(time.Hour * 24 * 5),
+		Valid: true,
+	},
+})
+```
+
+```go
+// get all appointments by doctor id and print the details
+data, err := queries.GetAppointmentsByDoctor(ctx, 1)
+if err != nil {
+	log.Fatal(err)
+}
+
+for _, appointment := range data {
+	fmt.Printf("Doctor: %s\n", appointment.DoctorName)
+	fmt.Printf("Patient: %s\n", appointment.PatientName)
+	fmt.Printf("Appointment Date: %v\n", appointment.AppointmentDate)
+	fmt.Println("------")
+}
+```
+
+Done 💥. These generated code makes it so easy to create a data access layer for our application. Although gophers loves to write all by themselves, but sometimes I just want the work to be done.
+
+Thanks 🥂. Share this article with your colleagues or developer friends and save them from the orm hell. 😈
