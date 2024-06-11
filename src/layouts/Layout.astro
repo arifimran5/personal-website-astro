@@ -43,19 +43,21 @@ let desc = description ? description : 'Portfolio website of Arif Imran'
     <link rel='sitemap' href='/sitemap-index.xml' />
     <link rel='icon' href='/favicon/favicon.ico' />
     <meta name='generator' content={Astro.generator} />
-
+    <!-- Google Tag Manager -->
+    <meta
+      name='google-site-verification'
+      content='5XVWGI2-vDDsw21DG6ESR0nxevb1hOU2rR_Q3TTQx28'
+    />
     <!-- Open Graph / Facebook -->
     <meta property='og:title' content={title} />
     <meta property='og:description' content={desc} />
     <meta property='og:url' content={canonicalURL} />
     <meta property='og:image' content={socialImageURL} />
-
     <!-- Twitter -->
     <meta property='twitter:card' content='summary_large_image' />
     <meta property='twitter:url' content={canonicalURL} />
     <meta property='twitter:title' content={title} />
     <meta property='twitter:description' content={desc} />
-
     <ViewTransitions fallback='none' />
     <title>{title}</title>
   </head>
