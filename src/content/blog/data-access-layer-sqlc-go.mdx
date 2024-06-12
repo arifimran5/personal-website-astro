@@ -245,12 +245,12 @@ It will create go code for each queries and also database models to use. To inte
 To demonstrate we are going to directly use the generated methods. So, Inside `main.go` establish the **db connection**.
 
 ```go
- 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, "postgres://root:secret@localhost:5432/dbSqlcPg?sslmode=disable")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close(ctx)
+ctx := context.Background()
+conn, err := pgx.Connect(ctx, "postgres://root:secret@localhost:5432/dbSqlcPg?sslmode=disable")
+if err != nil {
+	log.Fatal(err)
+}
+defer conn.Close(ctx)
 ```
 
 **provide the connection to the db.**
