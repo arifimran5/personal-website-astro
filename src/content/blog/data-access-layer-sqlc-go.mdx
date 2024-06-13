@@ -37,7 +37,7 @@ It’s that simple. Just like in gRPC where we define our API flow as .proto fil
 
 Enough Talk :)
 
-Let’s just write some code and explore how we can accomplish our goal using sqlc, Postgres, and Go. We'll also use Goose as a migration tool. You can install Goose from [this link](https://github.com/pressly/goose). For installing sqlc, refer to the [installation page](https://docs.sqlc.dev/en/latest/overview/install.html).
+Let’s just write some code and explore how we can accomplish our goal using sqlc, Postgres, and Go. We'll also use Goose as a migration tool. You can install Goose from <a target="_blank" aria-label="Goose installation" href="https://github.com/pressly/goose">this link</a>. For installing sqlc, refer to the <a target="_blank" aria-label="Sqlc installation" href="https://docs.sqlc.dev/en/latest/overview/install.html">installation page</a>.
 
 ## Setting up the project
 
@@ -47,7 +47,7 @@ We will be building the famous example of patient, doctor and appointment. we ne
 docker run --name postgres12 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 ```
 
-The project's GitHub repository contains a Makefile with all necessary commands to run the project. To get started, you'll need to initiate a Go module. Next, create a directory named 'db' and within this, create a subdirectory named 'migrations'. This is where we'll store all goose migrations.
+The project's <a href="https://github.com/arifimran5/db-sqlc-pg" aria-label="Github Repo Link" target="_blank">GitHub Repository</a> contains a Makefile with all necessary commands to run the project. To get started, you'll need to initiate a Go module. Next, create a directory named 'db' and within this, create a subdirectory named 'migrations'. This is where we'll store all goose migrations.
 
 use goose cli to create the migration file.
 
@@ -117,11 +117,11 @@ sql:
         sql_package: 'pgx/v5'
 ```
 
-Here, we provide the engine details, the location for our queries, and the table schema. You can learn more about the configuration [here](https://docs.sqlc.dev/en/latest/reference/config.html). It's important to note that we are using `pgx/v5` as our Postgres driver. Therefore, you must install this package with the command `go get github.com/jackc/pgx/v5` . [Link](https://github.com/jackc/pgx/)
+Here, we provide the engine details, the location for our queries, and the table schema. You can learn more about the configuration [here](https://docs.sqlc.dev/en/latest/reference/config.html). It's important to note that we are using `pgx/v5` as our Postgres driver. Therefore, you must install this package with the command `go get github.com/jackc/pgx/v5` <a target="_blank" aria-label="pgx installation" href="https://github.com/jackc/pgx/">Link</a>
 
 ## Writing Queries
 
-Let’s define our sqlc queries within their respective files. The syntax for writing queries so that sqlc can generate valid go code is very simple. `*-- name: <name> <command>*` .We need to Provide `Name` of the function and what it will return, or should it just execute the command. Read more about `query annotations` [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html) .
+Let’s define our sqlc queries within their respective files. The syntax for writing queries so that sqlc can generate valid go code is very simple. _`-- name: <name> <command>`_ .We need to Provide `Name` of the function and what it will return, or should it just execute the command. Read more about _query annotations_ <a target="_blank" aria-label="query annotation in sqlc" href="https://docs.sqlc.dev/en/stable/reference/query-annotations.html">here</a>.
 
 Query parameters are indicated differently in different databases. For instance, in Postgres, we use `$1, $2 ..`, whereas MySQL utilizes `?`.
 
@@ -311,6 +311,8 @@ for _, appointment := range data {
 	fmt.Println("------")
 }
 ```
+
+TL;DR: <a href="https://github.com/arifimran5/db-sqlc-pg" aria-label="Github Repo Link" target="_blank">GitHub Repository</a>
 
 Done 💥. These generated code makes it so easy to create a data access layer for our application. Although gophers loves to write all by themselves, but sometimes I just want the work to be done.
 
