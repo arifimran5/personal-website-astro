@@ -16,6 +16,7 @@ const { project } = Astro.props
         project.live && (
           <a href={project.live}>
             <img
+              loading='lazy'
               src='/assets/link.svg'
               width='24'
               height='24'
@@ -27,6 +28,7 @@ const { project } = Astro.props
       <a href={project.github}>
         <img
           src='/assets/github.svg'
+          loading='lazy'
           width='21'
           height='21'
           alt='Github icon'
