@@ -1,7 +1,7 @@
 ---
 import Layout from '@layouts/Layout.astro'
 import { getCollection } from 'astro:content'
-import { getSortedPosts } from '@utils/helper'
+import { formatDate, getSortedPosts } from '@utils/helper'
 
 const posts = await getCollection('blog')
 const sortedPosts = getSortedPosts(posts)
@@ -18,7 +18,10 @@ const sortedPosts = getSortedPosts(posts)
       sortedPosts.map((post) => (
         <div class='mt-5'>
           <a href={`/posts/${post.data.postSlug}`}>
-            <h2 class='text-text_primary'>{post.data.title}</h2>
+            <div class='flex justify-between'>
+              <h2 class='text-text_primary'>{post.data.title}</h2>
+              <span>{formatDate(post.data.pubDatetime)}</span>
+            </div>
             <p class='mt-1'>{post.data.description}</p>
           </a>
           <div class='flex gap-3 mt-2 text-gray-500 italic'>

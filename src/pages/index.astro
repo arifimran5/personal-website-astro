@@ -3,7 +3,7 @@ import Layout from '@layouts/Layout.astro'
 import ProjectCard from '@components/ProjectCard.astro'
 import { projects } from '@utils/projectData'
 import { getCollection } from 'astro:content'
-import { getFeaturedPosts } from '@utils/helper'
+import { formatDate, getFeaturedPosts } from '@utils/helper'
 import Cta from '@components/Cta.astro'
 
 const posts = await getCollection('blog')
@@ -37,9 +37,14 @@ const featured_posts = getFeaturedPosts(posts)
         featured_posts.map((post) => (
           <div class='mt-5 group'>
             <a href={`/posts/${post.data.postSlug}`}>
-              <h2 class='text-text_primary group-hover:text-accent'>
-                {post.data.title}
-              </h2>
+              <div class='flex justify-between'>
+                <h2 class='text-text_primary group-hover:text-accent'>
+                  {post.data.title}
+                </h2>
+                <span class='text-text_secondary'>
+                  {formatDate(post.data.pubDatetime)}
+                </span>
+              </div>
               <p class='mt-1 text-text_secondary'>{post.data.description}</p>
             </a>
           </div>
