@@ -1,0 +1,212 @@
+---
+title: Atomic Map in Golang
+description: What is wrong with simple maps in GoLang
+pubDatetime: 2024-06-22T15:46:44.339Z
+author: Arif Imran
+featured: true
+draft: false
+tags:
+  - ds
+  - go
+postSlug: atomic-map
+ogImage: 'atomic-map.jpg'
+---
+
+## What is wrong with simple maps in GoLang
+
+In GoLang, a simple map isn't designed to handle concurrent read and write operations. This means that without implementing additional safeguards, multiple routines accessing and modifying the map simultaneously can lead to unpredictable results and data races. These issues can be difficult to debug and have the potential to cause significant issues within your software.
+
+Let’s see some code to have a better understanding
+
+```go
+import "testing"
+
+func TestMap(t *testing.T) {
+	m := make(map[int]int)
+
+	for i := 0; i < 5; i++ {
+		go func(i int) {
+			m[i] = i * i
+		}(i)
+	}
+}
+```
+
+In the above code, we define a test where we create a map and use five goroutines to add values to it.
+
+When we run the code with a `go test`, it returns an `ok` result, which is not what we expect. However, if we specify the `--race` flag to detect any race conditions in the code, we see a different output.
+
+```
+WARNING: DATA RACE
+Write at 0x00c000016540 by goroutine:
+```
+
+A race condition occurs when two or more goroutines can access shared data and they try to change it at the same time. As a result, the value of the shared data may be unpredictable and incorrect, causing unexpected behavior in the program. In our example, multiple goroutines are trying to write to the same map concurrently, which is not a thread-safe operation and hence, leads to a data race.
+
+## How we solve this problem
+
+Designing a map structure with a read-write mutex in GoLang can solve the issue of race conditions. A read-write mutex, or in go `sync.RWMutex`, provides a safe way to control access to shared data across multiple goroutines. It allows multiple reads to occur concurrently, but writes are exclusive; while a write is happening, no other reads or writes can occur. This ensures that, when a goroutine is writing to the map, no other goroutine can access it, thereby eliminating the risk of data races and ensuring the integrity of the data.
+
+Let’s code a simple counter example with what we have learnt
+
+```go
+import (
+	"fmt"
+	"sync"
+	"testing"
+	"time"
+)
+
+type SafeCounter struct {
+	mu    sync.RWMutex
+	count map[string]int
+}
+
+func (c *SafeCounter) Increment(key string) {
+	c.mu.Lock() //lock for writing
+	defer c.mu.Unlock()
+	c.count[key]++
+}
+
+func (c *SafeCounter) Get(key string) int {
+	c.mu.RLock() // read lock
+	defer c.mu.RUnlock()
+	return c.count[key]
+}
+
+func TestMap(t *testing.T) {
+	counter := SafeCounter{count: make(map[string]int)}
+
+	// Simulate concurrent writes
+	for i := 0; i < 100; i++ {
+		go counter.Increment("key1")
+	}
+
+	// Simulate concurrent reads
+	for i := 0; i < 10; i++ {
+		go func() {
+			fmt.Println(counter.Get("key1"))
+		}()
+	}
+
+	// Wait a bit for goroutines to finish
+	time.Sleep(time.Second)
+	fmt.Println("Final count:", counter.Get("key1"))
+}
+```
+
+If we test this code with a `--race` flag, it is going to be an ok result.
+
+## Final Code
+
+A Generic Atomic Map implementation
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type AtomicMap[K comparable, V any] interface {
+	Insert(key K, value V)
+	Get(key K) (V, error)
+	GetOrCreate(key K, createValue V) V
+	Update(key K, value V) error
+	Delete(key K) error
+	HasKey(key K) bool
+	Len() int
+	ForEach(fn func(key K, value V))
+}
+
+type atomicMap[K comparable, V any] struct {
+	mu    sync.RWMutex
+	items map[K]V
+}
+
+func NewAtomicMap[K comparable, V any]() *atomicMap[K, V] {
+	return &atomicMap[K, V]{
+		items: make(map[K]V),
+	}
+}
+
+func (m *atomicMap[K, V]) Insert(key K, value V) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.items[key] = value
+}
+
+func (m *atomicMap[K, V]) Get(key K) (V, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	val, ok := m.items[key]
+	if !ok {
+		return val, fmt.Errorf("key %v not found", key)
+	}
+	return val, nil
+}
+
+func (m *atomicMap[K, V]) GetOrCreate(key K, createValue V) V {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	item, ok := m.items[key]
+	if !ok {
+		m.mu.Lock() //write lock
+		defer m.mu.Unlock()
+		item, ok = m.items[key] //double check for race condition
+		if !ok {
+			item = createValue
+			m.items[key] = item
+		}
+	}
+	return item
+}
+
+func (m *atomicMap[K, V]) Update(key K, value V) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, ok := m.items[key]; !ok {
+		return fmt.Errorf("key %v not found", key)
+	}
+	m.items[key] = value
+	return nil
+}
+
+func (m *atomicMap[K, V]) Delete(key K) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, ok := m.items[key]; !ok {
+		return fmt.Errorf("key %v not found", key)
+	}
+	delete(m.items, key)
+	return nil
+}
+
+func (m *atomicMap[K, V]) HasKey(key K) bool {
+	m.mu.RLock()
+	defer m.mu.Unlock()
+	_, ok := m.items[key]
+	return ok
+}
+
+func (m *atomicMap[K, V]) Len() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.items)
+}
+
+func (m *atomicMap[K, V]) ForEach(fn func(key K, value V)) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	for k, v := range m.items {
+		fn(k, v)
+	}
+}
+```
+
+[go playground link](https://go.dev/play/p/mbxQyJBLwko)
+
+Thank you for reading!
